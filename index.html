@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Космический квиз: Тайны Луны</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: radial-gradient(circle at 20% 30%, #0a0f2a, #03050b);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Звездный фон с анимацией */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: twinkle 3s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(1);}
+            100% { opacity: 1; transform: scale(1.2);}
+        }
+
+        /* Луна для декора */
+        .moon-bg {
+            position: fixed;
+            bottom: -100px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle at 30% 30%, #f5f3e0, #c0b280);
+            border-radius: 50%;
+            opacity: 0.08;
+            filter: blur(40px);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            width: 100%;
+            background: rgba(10, 20, 40, 0.65);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            border: 1px solid rgba(255, 215, 150, 0.4);
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5), 0 0 20px rgba(100, 150, 255, 0.2);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Заголовок */
+        .header {
+            background: linear-gradient(135deg, #1a2a4f, #0a1030);
+            padding: 25px 30px;
+            text-align: center;
+            border-bottom: 2px solid #ffd966;
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.4rem;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #fff6e0, #ffd966);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(255,200,100,0.5);
+        }
+
+        .header p {
+            color: #bbd9ff;
+            font-size: 1.1rem;
+            margin-top: 8px;
+        }
+
+        /* Область с вопросами */
+        .quiz-content {
+            padding: 30px 35px;
+        }
+
+        /* Счетчик */
+        .score-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed rgba(255,217,102,0.4);
+        }
+
+        .question-counter {
+            font-size: 0.9rem;
+            color: #ffd966;
+            font-weight: bold;
+            background: #00000055;
+            padding: 5px 12px;
+            border-radius: 40px;
+        }
+
+        .score {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(90deg, #2a3f6e, #1a2a4a);
+            padding: 5px 18px;
+            border-radius: 40px;
+            font-family: 'Orbitron', monospace;
+            box-shadow: 0 0 8px #ffd96655;
+        }
+
+        .score span {
+            color: #ffd966;
+            font-size: 1.8rem;
+        }
+
+        /* Карточка вопроса */
+        .question-card {
+            background: rgba(0, 0, 0, 0.55);
+            border-radius: 32px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 6px solid #ffd966;
+            transition: 0.2s;
+        }
+
+        .question-text {
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: #fff6e8;
+            margin-bottom: 25px;
+            line-height: 1.3;
+        }
+
+        /* Варианты ответов */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .option {
+            background: rgba(20, 30, 55, 0.7);
+            border: 1px solid #4a5b7a;
+            border-radius: 60px;
+            padding: 14px 22px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #eef4ff;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            background: #2a3f60cc;
+            transform: translateX(6px);
+            border-color: #ffd966;
+        }
+
+        .prefix {
+            font-weight: bold;
+            background: #ffd96633;
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 30px;
+            margin-right: 18px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            color: #ffd966;
+        }
+
+        /* Состояния ответов */
+        .option.correct {
+            background: #1f6d3fcc;
+            border-color: #7effa5;
+            box-shadow: 0 0 8px #33ff77;
+            cursor: default;
+        }
+
+        .option.wrong {
+            background: #8b3c3ccc;
+            border-color: #ffaaaa;
+            text-decoration: line-through;
+            cursor: default;
+        }
+
+        .option.disabled {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        /* Кнопки */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        button {
+            background: linear-gradient(95deg, #2c3e66, #141e3c);
+            border: none;
+            padding: 12px 32px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #ffefcf;
+            font-family: 'Orbitron', monospace;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid #ffd96677;
+        }
+
+        button:hover:not(:disabled) {
+            background: #3e5a85;
+            transform: scale(1.02);
+            box-shadow: 0 0 12px #ffd966aa;
+            border-color: #ffd966;
+        }
+
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .reset-btn {
+            background: #2a1e3c;
+            color: #ffc285;
+        }
+
+        /* Результат */
+        .result-screen {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .final-score {
+            font-size: 3rem;
+            font-weight: 900;
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, gold, #ffaa33);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 20px 0;
+        }
+
+        .medal {
+            font-size: 5rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        footer {
+            background: #03060ecc;
+            padding: 12px;
+            text-align: center;
+            font-size: 0.7rem;
+            color: #5e7a9e;
+        }
+
+        @media (max-width: 650px) {
+            .quiz-content { padding: 20px; }
+            .question-text { font-size: 1.3rem; }
+            .option { padding: 10px 16px; font-size: 0.9rem; }
+            .header h1 { font-size: 1.7rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+<div class="moon-bg"></div>
+
+<div class="container" id="quizContainer">
+    <div class="header">
+        <h1>🌕 ТАЙНЫ ЛУНЫ 🚀</h1>
+        <p>Интерактивный квиз для 8 класса | Космический вызов</p>
+    </div>
+
+    <div class="quiz-content" id="mainContent">
+        <!-- динамическая загрузка -->
+    </div>
+    <footer>⭐ Гравитация знаний притягивает успех! ⭐</footer>
+</div>
+
+<script>
+    // ДАННЫЕ КВИЗА
+    const questions = [
+        {
+            text: "🌍 Во сколько раз диаметр Луны (≈3474 км) меньше диаметра Земли (≈12742 км)?",
+            options: [
+                "Примерно в 2 раза",
+                "Примерно в 4 раза",
+                "Примерно в 3,7 раза (почти в 4)",
+                "Примерно в 10 раз"
+            ],
+            correct: 2, // индекс 0-based
+            explanation: "Луна меньше Земли по диаметру в 3,7 раза, а по массе — в 81 раз."
+        },
+        {
+            text: "🌙 Почему с Земли всегда видна только одна сторона Луны?",
+            options: [
+                "Луна не вращается вокруг своей оси",
+                "Период вращения Луны вокруг оси совпадает с периодом обращения вокруг Земли",
+                "Земля своим притяжением «закрывает» обратную сторону",
+                "Из-за плотной атмосферы Луны"
+            ],
+            correct: 1,
+            explanation: "Это синхронное вращение (приливный захват). Оборот вокруг Земли и вокруг оси занимает 27,3 суток."
+        },
+        {
+            text: "🌑 «Моря» на Луне — это тёмные участки. Чем они являются на самом деле?",
+            options: [
+                "Застывшими океанами воды",
+                "Равнинами из застывшей базальтовой лавы",
+                "Глубокими трещинами в коре",
+                "Областями вечной тени"
+            ],
+            correct: 1,
+            explanation: "Это огромные базальтовые равнины, образовавшиеся после излияния лавы. Воды на Луне нет."
+        },
+        {
+            text: "👨‍🚀 Если земной вес астронавта 60 кг (600 Н), каким будет его ВЕС на Луне?",
+            options: [
+                "60 кг (600 Н)",
+                "0 кг (невесомость)",
+                "Примерно 10 кг (100 Н)",
+                "Примерно 360 кг (3600 Н)"
+            ],
+            correct: 2,
+            explanation: "Сила тяжести на Луне в 6 раз меньше. Вес составит ≈100 Н, масса тела не изменится (60 кг)."
+        },
+        {
+            text: "🌊 Какое явление напрямую вызвано гравитационным воздействием Луны (в паре с Солнцем)?",
+            options: [
+                "Смена времён года",
+                "Приливы и отливы в океанах",
+                "Магнитные бури",
+                "Изменение продолжительности суток"
+            ],
+            correct: 1,
+            explanation: "Гравитация Луны «вытягивает» водную оболочку Земли, создавая приливные горбы."
+        }
+    ];
+
+    // БОНУСНЫЙ вопрос (доп. балл)
+    const bonusQuestion = {
+        text: "⭐ БОНУС: Что такое «Суперлуние»? (Дополнительный балл!)",
+        options: [
+            "Полное затмение Луны",
+            "Полнолуние в перигее (ближайшей точке орбиты) — Луна выглядит больше",
+            "Запуск китайского корабля на Луну",
+            "Луна в апогее (дальней точке)"
+        ],
+        correct: 1,
+        explanation: "Суперлуние происходит, когда полнолуние совпадает с прохождением перигея, и спутник кажется на 14% больше."
+    };
+
+    let currentIndex = 0;
+    let userAnswers = new Array(questions.length).fill(null); // индекс выбранного ответа или null
+    let score = 0;
+    let bonusGiven = false;
+    let quizCompleted = false;
+
+    // DOM элементы
+    const mainDiv = document.getElementById('mainContent');
+
+    // Функция отрисовки текущего вопроса
+    function renderCurrent() {
+        if (quizCompleted) {
+            renderResult();
+            return;
+        }
+
+        if (currentIndex < questions.length) {
+            renderQuestion(currentIndex);
+        } else {
+            // Вопросы закончились -> показываем бонус, если ещё не показан
+            if (!bonusGiven) {
+                renderBonus();
+            } else {
+                completeQuiz();
+            }
+        }
+    }
+
+    function renderQuestion(idx) {
+        const q = questions[idx];
+        const selectedOpt = userAnswers[idx];
+        const isAnswered = selectedOpt !== null;
+
+        let optionsHtml = '';
+        q.options.forEach((opt, optIdx) => {
+            let additionalClass = '';
+            let disabledAttr = isAnswered ? 'disabled' : '';
+
+            if (isAnswered) {
+                if (optIdx === q.correct) {
+                    additionalClass = 'correct';
+                } else if (optIdx === selectedOpt && optIdx !== q.correct) {
+                    additionalClass = 'wrong';
+                } else {
+                    additionalClass = 'disabled';
+                }
+            }
+
+            const prefixLetter = String.fromCharCode(65 + optIdx); // A,B,C,D
+            optionsHtml += `
+                <div class="option ${additionalClass}" data-opt-index="${optIdx}" data-q-idx="${idx}" style="${!isAnswered ? 'cursor:pointer' : ''}">
+                    <span class="prefix">${prefixLetter}</span>
+                    <span>${opt}</span>
+                </div>
+            `;
+        });
+
+        const explanationHtml = isAnswered ? `<div style="margin-top: 20px; padding: 12px; background: #00000077; border-radius: 24px; border-left: 4px solid #ffd966; font-size: 0.9rem;"><strong>🔭 Пояснение:</strong> ${q.explanation}</div>` : '';
+
+        const html = `
+            <div class="score-area">
+                <div class="question-counter">Вопрос ${idx+1} из ${questions.length}</div>
+                <div class="score">🌟 СЧЁТ: <span>${score}</span></div>
+            </div>
+            <div class="question-card">
+                <div class="question-text">${q.text}</div>
+                <div class="options" id="optionsContainer">
+                    ${optionsHtml}
+                </div>
+                ${explanationHtml}
+            </div>
+            <div class="nav-buttons">
+                <button class="reset-btn" id="resetQuizBtn">🔄 Начать заново</button>
+                <button id="nextBtn" ${!isAnswered ? 'disabled' : ''}>➡ Следующий вопрос</button>
+            </div>
+        `;
+
+        mainDiv.innerHTML = html;
+
+        // Добавляем обработчики на варианты (если не отвечено)
+        if (!isAnswered) {
+            const optionDivs = document.querySelectorAll('.option');
+            optionDivs.forEach(div => {
+                div.addEventListener('click', (e) => {
+                    if (quizCompleted) return;
+                    const optIndex = parseInt(div.dataset.optIndex);
+                    const qIdx = parseInt(div.dataset.qIdx);
+                    if (userAnswers[qIdx] !== null) return;
+                    // запоминаем ответ
+                    userAnswers[qIdx] = optIndex;
+                    // Проверяем правильность и начисляем балл
+                    if (optIndex === q.correct) {
+                        score += 1;
+                    }
+                    // Перерисовываем вопрос с пояснением
+                    renderCurrent();
+                });
+            });
+        }
+
+        // Кнопка "Следующий вопрос"
+        const nextBtn = document.getElementById('nextBtn');
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                if (userAnswers[currentIndex] !== null) {
+                    currentIndex++;
+                    renderCurrent();
+                }
+            });
+        }
+
+        const resetBtn = document.getElementById('resetQuizBtn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', resetQuiz);
+        }
+    }
+
+    function renderBonus() {
+        // Специальный экран для бонуса
+        let bonusSelected = false;
+        let bonusResultGiven = false;
+        let correctChosen = false;
+
+        function refreshBonusView() {
+            let optionsHtml = '';
+            bonusQuestion.options.forEach((opt, idx) => {
+                let addClass = '';
+                let clickable = !bonusSelected;
+                if (bonusSelected) {
+                    clickable = false;
+                    if (idx === bonusQuestion.correct) addClass = 'correct';
+                    if (idx === correctChosen && idx !== bonusQuestion.correct && correctChosen !== null) addClass = 'wrong';
+                    else if (bonusSelected && idx !== bonusQuestion.correct) addClass = 'disabled';
+                }
+                const prefixLetter = String.fromCharCode(65 + idx);
+                optionsHtml += `
+                    <div class="option ${addClass}" data-bonus-idx="${idx}" style="${clickable ? 'cursor:pointer' : ''}">
+                        <span class="prefix">${prefixLetter}</span>
+                        <span>${opt}</span>
+                    </div>
+                `;
+            });
+
+            let explanationBlock = '';
+            if (bonusSelected) {
+                explanationBlock = `<div style="margin-top: 20px; padding: 12px; background: #00000077; border-radius: 24px;"><strong>🌕 Бонус-пояснение:</strong> ${bonusQuestion.explanation}</div>`;
+            }
+
+            const html = `
+                <div class="score-area">
+                    <div class="question-counter">✨ БОНУСНЫЙ ВОПРОС ✨</div>
+                    <div class="score">🌟 СЧЁТ: <span>${score}</span></div>
+                </div>
+                <div class="question-card">
+                    <div class="question-text">⭐ ${bonusQuestion.text}</div>
+                    <div class="options" id="bonusOptions">
+                        ${optionsHtml}
+                    </div>
+                    ${explanationBlock}
+                </div>
+                <div class="nav-buttons">
+                    <button class="reset-btn" id="resetQuizBonusBtn">🔄 Начать заново</button>
+                    <button id="finishQuizBtn" ${!bonusSelected ? 'disabled' : ''}>🏆 Завершить квиз</button>
+                </div>
+            `;
+            mainDiv.innerHTML = html;
+
+            if (!bonusSelected) {
+                const bonusOpts = document.querySelectorAll('.option');
+                bonusOpts.forEach(opt => {
+                    opt.addEventListener('click', (e) => {
+                        if (bonusSelected) return;
+                        const idxChoice = parseInt(opt.dataset.bonusIdx);
+                        correctChosen = idxChoice;
+                        bonusSelected = true;
+                        if (idxChoice === bonusQuestion.correct) {
+                            score += 1;
+                        }
+                        refreshBonusView();
+                    });
+                });
+            }
+
+            const finishBtn = document.getElementById('finishQuizBtn');
+            if (finishBtn) {
+                finishBtn.addEventListener('click', () => {
+                    if (bonusSelected) {
+                        bonusGiven = true;
+                        completeQuiz();
+                    }
+                });
+            }
+            const resetBtn = document.getElementById('resetQuizBonusBtn');
+            if (resetBtn) resetBtn.addEventListener('click', resetQuiz);
+        }
+
+        refreshBonusView();
+    }
+
+    function completeQuiz() {
+        quizCompleted = true;
+        renderResult();
+    }
+
+    function renderResult() {
+        const maxScore = questions.length + 1; // 5 осн + 1 бонус
+        let message = "";
+        let medalEmoji = "";
+        if (score === maxScore) {
+            message = "Абсолютный космический гений! 🧑‍🚀🌕";
+            medalEmoji = "🏆🌙✨";
+        } else if (score >= 4) {
+            message = "Отличный результат! Ты хорошо знаешь Луну! 🚀";
+            medalEmoji = "🌟🔭";
+        } else if (score >= 2) {
+            message = "Неплохо! Но есть куда расти — изучи спутник поближе! 📖";
+            medalEmoji = "🌙📚";
+        } else {
+            message = "Гравитация знаний слабовата... Запусти квиз снова! 💫";
+            medalEmoji = "🔄🪐";
+        }
+
+        const html = `
+            <div class="result-screen">
+                <div class="medal">${medalEmoji}</div>
+                <h2 style="color:#ffefcf;">Квиз завершён!</h2>
+                <div class="final-score">${score} / ${maxScore}</div>
+                <p style="font-size:1.2rem; margin-bottom:20px;">${message}</p>
+                <button id="fullResetBtn" style="background:#ffaa33; color:#1a1f2e; font-weight:bold;">🌕 Пройти снова 🚀</button>
+            </div>
+        `;
+        mainDiv.innerHTML = html;
+        document.getElementById('fullResetBtn')?.addEventListener('click', resetQuiz);
+    }
+
+    function resetQuiz() {
+        currentIndex = 0;
+        userAnswers = new Array(questions.length).fill(null);
+        score = 0;
+        bonusGiven = false;
+        quizCompleted = false;
+        renderCurrent();
+    }
+
+    // Генерация звезд
+    function createStars() {
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 200; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            const size = Math.random() * 3 + 1;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 3}s`;
+            star.style.animationDuration = `${Math.random() * 2 + 1.5}s`;
+            starsContainer.appendChild(star);
+        }
+    }
+
+    createStars();
+    renderCurrent();
+</script>
+</body>
+</html>
