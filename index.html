@@ -447,7 +447,7 @@
             `;
         });
 
-        const explanationHtml = isAnswered ? `<div style="margin-top: 20px; padding: 12px; background: #00000077; border-radius: 24px; border-left: 4px solid #ffd966; font-size: 0.9rem;"><strong>🔭 Пояснение:</strong> ${q.explanation}</div>` : '';
+        const explanationHtml = isAnswered ? `<div style="margin-top: 20px; padding: 12px; background: #00000077; border-radius: 24px; border-left: 4px solid #ffd966; font-size: 0.9rem; color: #fff6e8;"><strong>🔭 Пояснение:</strong> ${q.explanation}</div>` : '';
 
         const html = `
             <div class="score-area">
@@ -617,7 +617,7 @@
                 <div class="medal">${medalEmoji}</div>
                 <h2 style="color:#ffefcf;">Квиз завершён!</h2>
                 <div class="final-score">${score} / ${maxScore}</div>
-                <p style="font-size:1.2rem; margin-bottom:20px;">${message}</p>
+                <p style="font-size:1.2rem; margin-bottom:20px; color: #fff6e8;">${message}</p>
                 <button id="fullResetBtn" style="background:#ffaa33; color:#1a1f2e; font-weight:bold;">🌕 Пройти снова 🚀</button>
             </div>
         `;
